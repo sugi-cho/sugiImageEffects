@@ -14,7 +14,8 @@ public class AfterEffects : MonoBehaviour
 
 	void CreateOutput (RenderTexture s)
 	{
-
+		if (output != null)
+			Destroy (output);
 		output = new RenderTexture (s.width, s.height, s.depth, s.format);
 		output.wrapMode = wrapmode;
 		output.Create ();
@@ -22,7 +23,7 @@ public class AfterEffects : MonoBehaviour
 
 	void OnRenderImage (RenderTexture s, RenderTexture d)
 	{
-		if (output == null)
+		if (output == null || output.width != s.width || output.height != s.height)
 			CreateOutput (s);
 		RenderTexture rt = RenderTexture.GetTemporary (s.width, s.height, s.depth, s.format);
 		Graphics.Blit (s, rt);
