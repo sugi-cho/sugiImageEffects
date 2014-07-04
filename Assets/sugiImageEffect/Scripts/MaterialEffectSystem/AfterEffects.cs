@@ -6,11 +6,11 @@ public class AfterEffects : MonoBehaviour
 	public RenderTexture output;
 	public TextureWrapMode wrapmode;
 
-	public Material[] targetMats;
-	public string propNameTarget = "_Tex";
-
 	public Material[] effects;
 	public int iterate = 1;
+	
+	public Material[] targetMats;
+	public string propNameTarget = "_Tex";
 
 	void CreateOutput (RenderTexture s)
 	{

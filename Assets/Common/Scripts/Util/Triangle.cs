@@ -4,24 +4,41 @@ using System.Collections.Generic;
 
 public class Triangle
 {
-	public static Triangle[] GetTriangles (Mesh m, out Bisection[] bs)
+	public static Triangle[] GetTriangles (Mesh m)
 	{
 		Vector3[] vertices = m.vertices;
 		int[] triangles = m.triangles;
-
-		List<Bisection> bList = new List<Bisection> ();
+		
 		List<Triangle> tList = new List<Triangle> ();
 		
 		for (int i = 0; i < triangles.Length/3; i++) {
-			Triangle t = new Triangle (vertices [triangles [i * 3]], vertices [triangles [i * 3 + 1]], vertices [triangles [i * 3 + 2]]);
+			int
+			vIndex1 = triangles [i * 3],
+			vIndex2 = triangles [i * 3 + 1],
+			vIndex3 = triangles [i * 3 + 2];
+			
+			Triangle t = new Triangle (vertices [vIndex1], vertices [vIndex2], vertices [vIndex3]);
+			t.mesh = m;
+			t.index [0] = vIndex1;
+			t.index [1] = vIndex2;
+			t.index [2] = vIndex3;
 			tList.Add (t);
-			bList.Add (new Bisection (t.area));
 		}
-		bs = bList.ToArray ();
-		Bisection.SetBisectionVal (bs);
 		return tList.ToArray ();
 	}
-
+	
+	public static Triangle[] GetTriangles (Mesh m, out Bisection[] bs, bool useColor = false)
+	{
+		Triangle[] ts = GetTriangles (m);
+		bs = new Bisection[ts.Length];
+		for (int i = 0; i < bs.Length; i++) {
+			//use vertex color for bisection value.
+			bs [i] = new Bisection (ts [i].area * (useColor ? m.colors [m.triangles [i * 3]].r : 1f));
+		}
+		Bisection.SetBisectionVal (bs);
+		return ts;
+	}
+	
 	//this is example code!!
 	public static Triangle GetRandomTriangle (Triangle[] ts, Bisection[] bs)
 	{
@@ -29,9 +46,11 @@ public class Triangle
 	}
 	
 	Vector3 point1, point2, point3;
+	
 	public float area;
 	public Vector3 center, normal;
-	Bisection b;
+	public int[] index = new int[3];
+	public Mesh mesh;
 	
 	public Triangle (Vector3 p1, Vector3 p2, Vector3 p3)
 	{
