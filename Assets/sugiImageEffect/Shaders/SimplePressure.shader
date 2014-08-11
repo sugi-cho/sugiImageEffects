@@ -10,10 +10,10 @@
 		half _P;
 		half4 _MainTex_TexelSize;
 			
-		half frag(v2f_img i) : COLOR{
+		half4 frag(v2f_img i) : COLOR{
 			half p = tex2D(_MainTex, i.uv).r;
 			half2 dd = half2(ddx(p), ddy(p));
-			return tex2D(_MainTex, i.uv - dd*_P*_MainTex_TexelSize.xy).r*0.99;
+			return tex2D(_MainTex, i.uv - dd*_P*_MainTex_TexelSize.xy)*0.99;
 		}
 	ENDCG
 	

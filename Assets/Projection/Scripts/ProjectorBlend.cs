@@ -62,7 +62,6 @@ public class ProjectorBlend : MonoBehaviour
 	{
 		LoadProps ();
 		SetProps ();
-		Screen.showCursor = false;
 	}
 	
 	void Update ()
@@ -70,10 +69,7 @@ public class ProjectorBlend : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.E)) {
 			edit = !edit;
 			SaveProps ();
-			Screen.showCursor = true;
 		}
-		if (Input.GetKeyDown (KeyCode.S))
-			Screen.showCursor = false;
 	}
 
 	void OnRenderImage (RenderTexture s, RenderTexture d)

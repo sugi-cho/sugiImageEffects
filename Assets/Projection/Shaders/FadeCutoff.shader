@@ -17,9 +17,8 @@ Shader "Custom/FadeCutoff" {
 	}
 	SubShader {
 		pass{
-			ZTest Always Cull Off ZWrite Off
-			Fog { Mode off }  
-			ColorMask RGB	
+			ZTest Always
+				
 			CGPROGRAM
     		#pragma fragmentoption ARB_precision_hint_fastest
 			#pragma vertex vert_img

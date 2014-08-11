@@ -23,37 +23,35 @@ Shader "Custom/ProjectorBlend2-1"{
 			if(uv.x < 0.5){
 				uv1.x += _W;
 				if(0.5 - _W < uv1.x){
-					b = 1 - (uv.x - 0.5 + 2 * _W) / (2 * _W);
+					b *= 1 - (uv.x - 0.5 + 2 * _W) / (2 * _W);
 				}
 			}
 			else{
 				uv1.x -= _W;
 				if(uv1.x < 0.5 + _W){
-					b = (uv.x - 0.5) / (2 * _W);
+					b *= (uv.x - 0.5) / (2 * _W);
 				}
 			}
 			
 			if(0.5 - 2 * _W < uv.x && uv.x < 0.5 + 2 * _W){
 				if(b < 0.5){
-					b = _A * pow((2 * b), _P);
+					b *= _A * pow((2 * b), _P);
 				}
 				else{
-					b = 1 - (1 - _A) * pow((2 * (1 - b)), _P);
+					b *= 1 - (1 - _A) * pow((2 * (1 - b)), _P);
 				}
 			}
 			
 			if(uv1.x < 0 || 1 < uv1.x || uv1.y < 0 || 1 < uv1.y){
-				b = 0;
+				b *= 0;
 			}
 			
-			return b * tex2D(_MainTex, i.uv);
+			return b * tex2D(_MainTex, uv1);
 		}
 	ENDCG
 	
 	SubShader {
-		ZTest Always Cull Off ZWrite Off
-		Fog { Mode off }  
-		ColorMask RGB
+		ZTest Always
  
 		pass{
 			CGPROGRAM
