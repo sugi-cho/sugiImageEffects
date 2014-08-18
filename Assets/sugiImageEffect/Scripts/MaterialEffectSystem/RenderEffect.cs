@@ -7,12 +7,17 @@ public class RenderEffect : MonoBehaviour
 	public RenderTexture output;
 	public TextureWrapMode wrapmode = TextureWrapMode.Clamp;
 	public Material[] inits, effects;
-	public int iter = 1;
 	public Material[] targetMats;
 	public string propNameTarget = "_Tex";
 	public bool
 		show = true,
-		compute = false;
+		compute = false,
+		getBlur = false;
+
+	public float blurSize = 3f;
+	public int
+		blurIter = 3,
+		blurDS = 1;
 
 	void OnRenderImage (RenderTexture s, RenderTexture d)
 	{
@@ -24,6 +29,14 @@ public class RenderEffect : MonoBehaviour
 			RenderOutput (output);
 		} else
 			RenderOutput (s);
+		
+		
+		if (getBlur)
+			output.GetBlur (blurSize, blurIter, blurDS);
+		for (int i = 0; i < targetMats.Length; i++) {
+			Material target = targetMats [i];
+			target.SetTexture (propNameTarget, output);
+		}
 		if (show)
 			Graphics.Blit (output, d);
 		else
@@ -40,21 +53,15 @@ public class RenderEffect : MonoBehaviour
 		
 		RenderTexture rt = RenderTexture.GetTemporary (s.width, s.height, s.depth, s.format);
 		Graphics.Blit (s, rt);
-		for (int n = 0; n < iter; n++) {
-			for (int i = 0; i < effects.Length; i++) {
-				Material effect = effects [i];
-				for (int j = 0; j < effect.passCount; j++) {
-					Graphics.Blit (rt, output, effect, j);
-					Graphics.Blit (output, rt);
-				}
+		for (int i = 0; i < effects.Length; i++) {
+			Material effect = effects [i];
+			for (int j = 0; j < effect.passCount; j++) {
+				Graphics.Blit (rt, output, effect, j);
+				Graphics.Blit (output, rt);
 			}
 		}
+		Graphics.Blit (rt, output);
 		RenderTexture.ReleaseTemporary (rt);
-		
-		for (int i = 0; i < targetMats.Length; i++) {
-			Material target = targetMats [i];
-			target.SetTexture (propNameTarget, output);
-		}
 	}
 	
 	void CreateOutput (RenderTexture s)
@@ -65,6 +72,6 @@ public class RenderEffect : MonoBehaviour
 		output = new RenderTexture (s.width, s.height, s.depth, s.format);
 		output.wrapMode = wrapmode;
 		output.Create ();
-
+		Graphics.Blit (s, output);
 	}
 }

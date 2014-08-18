@@ -16,4 +16,45 @@ static class Extentions
 	{
 		return new Vector2 (vec3.z, vec3.x);
 	}
+	
+	static Material bMat {
+		get {
+			if (_bMat == null)
+				_bMat = new Material (Shader.Find ("Hidden/FastBlur"));
+			return _bMat;
+		}
+	}
+	static Material _bMat;
+	public static RenderTexture GetBlur (this RenderTexture s, float bSize, int iteration = 1, int ds = 0)
+	{
+		float 
+		widthMod = 1f / (1f * (1 << ds));
+
+		int
+		rtW = s.width >> ds,
+		rtH = s.height >> ds;
+
+		RenderTexture rt = RenderTexture.GetTemporary (rtW, rtH, s.depth, s.format);
+		Graphics.Blit (s, rt);
+
+		for (int i = 0; i < iteration; i++) {
+			float iterationOffs = (float)i;
+			bMat.SetVector ("_Parameter", new Vector4 (bSize * widthMod + iterationOffs, -bSize * widthMod - iterationOffs, 0, 0));
+			
+			RenderTexture rt2 = RenderTexture.GetTemporary (rtW, rtH, 0, rt.format);
+			rt2.filterMode = FilterMode.Bilinear;
+			Graphics.Blit (rt, rt2, bMat, 1);
+			RenderTexture.ReleaseTemporary (rt);
+			rt = rt2;
+			
+			rt2 = RenderTexture.GetTemporary (rtW, rtH, 0, rt.format);
+			rt2.filterMode = FilterMode.Bilinear;
+			Graphics.Blit (rt, rt2, bMat, 2);
+			RenderTexture.ReleaseTemporary (rt);
+			rt = rt2;
+		}
+		Graphics.Blit (rt, s);
+		RenderTexture.ReleaseTemporary (rt);
+		return s;
+	}
 }

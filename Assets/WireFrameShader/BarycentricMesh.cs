@@ -7,7 +7,7 @@ using UnityEditor;
 public class BarycentricMesh : MonoBehaviour
 {
 	#if UNITY_EDITOR
-	[MenuItem("Custom/Create/Barycentric Mesh")]
+	[MenuItem("sugi.cho/Create/Barycentric Mesh")]
 	public static void CreateFromMenu ()
 	{
 		foreach (Mesh m in Selection.objects) {
@@ -18,6 +18,13 @@ public class BarycentricMesh : MonoBehaviour
 				AssetDatabase.SaveAssets ();
 				AssetDatabase.Refresh ();
 			}
+		}
+		if (Selection.activeGameObject.GetComponent<MeshFilter> () != null) {
+			Mesh newM = (Mesh)Instantiate (Selection.activeGameObject.GetComponent<MeshFilter> ().mesh);
+			ConvertMesh (newM);
+			AssetDatabase.CreateAsset (newM, "Assets/" + newM.name + "_wire.asset");
+			AssetDatabase.SaveAssets ();
+			AssetDatabase.Refresh ();
 		}
 	}
 	#endif
