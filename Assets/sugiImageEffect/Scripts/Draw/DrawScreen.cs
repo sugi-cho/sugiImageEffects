@@ -18,7 +18,7 @@ public class DrawScreen : MonoBehaviour
 			Vector3 pos = Input.mousePosition;
 			pos.x /= Screen.width;
 			pos.y /= Screen.height;
-			pos.z = 1f;
+			pos.z = 6f;
 			drawMat.SetVector ("_Draw", pos);
 		} else
 			drawMat.SetVector ("_Draw", Vector3.zero);

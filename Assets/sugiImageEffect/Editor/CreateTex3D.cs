@@ -4,6 +4,7 @@ using System.Collections;
 
 public class CreateTex3D : EditorWindow
 {
+	[MenuItem("sugi.cho/Window/CreatePerlin3DTexture")]
 	public static void Init ()
 	{
 		EditorWindow window = EditorWindow.GetWindow (typeof(CreateTex3D));

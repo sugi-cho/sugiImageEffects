@@ -17,8 +17,15 @@ public class RenderEffect : MonoBehaviour
 	public float blurSize = 3f;
 	public int
 		blurIter = 3,
-		blurDS = 1;
-
+		blurDS = 1,
+		baseHeight = 720;
+	
+	void Start ()
+	{
+		if (getBlur)
+			blurSize = (float)Screen.height / (float)baseHeight;
+	}
+	
 	void OnRenderImage (RenderTexture s, RenderTexture d)
 	{
 		if (compute) {
@@ -30,13 +37,14 @@ public class RenderEffect : MonoBehaviour
 		} else
 			RenderOutput (s);
 		
-		
 		if (getBlur)
 			output.GetBlur (blurSize, blurIter, blurDS);
+		
 		for (int i = 0; i < targetMats.Length; i++) {
 			Material target = targetMats [i];
 			target.SetTexture (propNameTarget, output);
 		}
+		
 		if (show)
 			Graphics.Blit (output, d);
 		else
@@ -51,17 +59,19 @@ public class RenderEffect : MonoBehaviour
 		if (output == null || output.width != s.width || output.height != s.height)
 			CreateOutput (s);
 		
-		RenderTexture rt = RenderTexture.GetTemporary (s.width, s.height, s.depth, s.format);
-		Graphics.Blit (s, rt);
-		for (int i = 0; i < effects.Length; i++) {
-			Material effect = effects [i];
-			for (int j = 0; j < effect.passCount; j++) {
-				Graphics.Blit (rt, output, effect, j);
-				Graphics.Blit (output, rt);
+		if (effects.Length > 0) {
+			RenderTexture rt = RenderTexture.GetTemporary (s.width, s.height, s.depth, s.format);
+			Graphics.Blit (s, rt);
+			for (int i = 0; i < effects.Length; i++) {
+				Material effect = effects [i];
+				for (int j = 0; j < effect.passCount; j++) {
+					Graphics.Blit (rt, output, effect, j);
+					Graphics.Blit (output, rt);
+				}
 			}
-		}
-		Graphics.Blit (rt, output);
-		RenderTexture.ReleaseTemporary (rt);
+			RenderTexture.ReleaseTemporary (rt);
+		} else
+			Graphics.Blit (s, output);
 	}
 	
 	void CreateOutput (RenderTexture s)

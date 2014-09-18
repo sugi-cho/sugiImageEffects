@@ -19,6 +19,8 @@
 #endif
 			
 			half4 b = tex2D(_MainTex, i.uv);
+			b = lerp(b, half4(1,1,1,1), b.g < 0.85? 0.01:0.1);
+				
 			half d = tex2D(_DrawTex, i.uv);
 			return lerp(b,_Color,d);
 			

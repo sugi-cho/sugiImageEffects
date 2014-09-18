@@ -16,6 +16,11 @@ static class Extentions
 	{
 		return new Vector2 (vec3.z, vec3.x);
 	}
+
+	public static Vector3 Position (this MonoBehaviour mb)
+	{
+		return mb.transform.position;
+	}
 	
 	static Material bMat {
 		get {

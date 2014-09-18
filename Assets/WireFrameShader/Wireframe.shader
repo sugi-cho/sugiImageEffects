@@ -45,7 +45,7 @@
 			float4 frag(vs2ps i) : COLOR {
 				float3 d = fwidth(i.bary.xyz);
 				float3 a3 = smoothstep(float3(0.0,0.0,0.0), _Gain * d, i.bary);
-				return 1-saturate(min(min(a3.x, a3.y), a3.z));
+				return saturate(min(min(a3.x, a3.y), a3.z));
 			}
 
 			ENDCG

@@ -6,6 +6,7 @@ using System.Linq;
 
 public class CubeParticle
 {
+
 	[MenuItem("sugi.cho/Create/ParticleMesh")]
 	public static void CreateParticleMesh ()
 	{
@@ -16,6 +17,45 @@ public class CubeParticle
 			}
 		}
 	}
+	[MenuItem("sugi.cho/Edit/BigBoundMesh")]
+	public static void BigBound ()
+	{
+		foreach (var o in Selection.objects) {
+			Mesh mesh = (Mesh)o;
+			if (mesh != null) {
+				SetBigBounds (mesh);
+			}
+		}
+	}
+	[MenuItem("sugi.cho/Create/PointParticle")]
+	public static void CreatePointParticles ()
+	{
+		Mesh mesh = new Mesh ();
+		Vector3[] vertices = new Vector3[65000];
+		Vector2[] uv = new Vector2[65000];
+		int[] indices = new int[65000];
+		
+		for (int i = 0; i < 65000; i++) {
+			float
+			x = i % 256f,
+			y = i / 256f;
+			
+			vertices [i] = Random.insideUnitSphere;
+			uv [i] = new Vector2 (x / 256f, y / 256f);
+			indices [i] = i;
+		}
+		mesh.vertices = vertices;
+		mesh.uv = uv;
+		mesh.SetIndices (indices, MeshTopology.Points, 0);
+		
+		AssetDatabase.CreateAsset (mesh, "Assets/PointParticle256x256.asset");
+		AssetDatabase.SaveAssets ();
+		AssetDatabase.Refresh ();
+		
+		Selection.activeObject = mesh;
+	}
+	
+	
 	static void CreateParticleFromMesh (Mesh mesh)
 	{
 		int[] indices0 = mesh.GetIndices (0);
@@ -65,10 +105,16 @@ public class CubeParticle
 		newMesh.uv2 = uv2;
 		newMesh.SetIndices (indices, MeshTopology.Triangles, 0);
 		newMesh.RecalculateNormals ();
-		newMesh.RecalculateBounds ();
+		SetBigBounds (newMesh);
 
 		AssetDatabase.CreateAsset (newMesh, string.Format ("Assets/{0}_{1}_{2}_particle.asset", mesh.name, numX, numY));
 		AssetDatabase.SaveAssets ();
 		AssetDatabase.Refresh ();
 	}
+
+	static void SetBigBounds (Mesh m)
+	{
+		m.bounds = new Bounds (Vector3.zero, Vector3.one * 100f);
+	}
+
 }

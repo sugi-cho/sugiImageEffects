@@ -4,8 +4,7 @@
 		_Velocity ("velocity", 2D) = "black"{}
 		_Position ("position", 2D) = "black"{}
 		_Direction ("direction", 2D) = "black"{}
-		_Scale ("scale", 2D) = "black"{}
-		_D ("directon", Vector) = (1,0,0,0)
+		_Scale ("scale", 2D) = "white"{}
 	}
  
 	CGINCLUDE
@@ -13,7 +12,6 @@
 		#include "Libs/Transform.cginc"
 		#define PI 3.14159265359
 		sampler2D _MainTex,_Velocity,_Position,_Direction,_Scale;
-		half4 _D;
 		
 		struct v2f {
 			float4 pos : SV_POSITION;
@@ -22,40 +20,44 @@
 			float3 wPos : TEXCOORD1;
 			float4 sPos : TEXCOORD2;
 			float3 cPos : TEXCOORD3;
-			float3 normal : TEXCOORD4;
+			float3 lPos :TEXCOORD4;
+			float3 normal : TEXCOORD5;
 		};
  
 		v2f vert (appdata_full v)
 		{
+			half3 pos = v.vertex.xyz;
 			half4
 				velocity = tex2Dlod(_Velocity, v.texcoord1),
 				position = tex2Dlod(_Position, v.texcoord1),
 				direction = tex2Dlod(_Direction, v.texcoord1),
-				scale = tex2Dlod(_Scale, v.texcoord1),
-				shape = v.vertex;
-			direction = half4(v.texcoord1.xy,-v.texcoord1.xy);
+				scale = tex2Dlod(_Scale, v.texcoord1);
+				
+			half3 shape = v.vertex.xyz;
+			
+			direction = position;
+			direction.w = v.texcoord1.x + v.texcoord1.y;
+			
 			half
 				yaw = atan2(direction.x, direction.z),
 				pitch = -atan2(direction.y, length(direction.xz)),
 				roll = -direction.w * 2 * PI;
-			half z = shape.z+0.5;
 			
-			shape.xyz = rotateZ(shape.xyz, roll);
-			shape.xyz = rotateX(shape.xyz, pitch);
-			shape.xyz = rotateY(shape.xyz, yaw);
+			shape = rotateZ(shape, roll);
+			shape = rotateX(shape, pitch);
+			shape = rotateY(shape, yaw);
 			
-			position.xyz = half3(v.texcoord1.xy*1.5,0)*half3(32,64,1);
-			scale.xyz = 1;//v.texcoord1.x+v.texcoord1.y;
-//			scale.xyz *= scale.w;
+			scale = 0.05;
 			
-			v.vertex.xyz = position.xyz + shape*scale.xyz;
+			v.vertex.xyz = position.xyz + shape * scale.xyz;
 			
 			v2f o;
 			o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
 			o.wPos = mul(_Object2World, v.vertex).xyz;
+			o.lPos = pos;
 			o.sPos = ComputeScreenPos(o.pos);
 			o.cPos = mul(_Object2World, half4(0,0,0,1));
-			o.color = lerp(half4(0,0,0,1),half4(1,0,0,1),z);
+			o.color = v.color;
 			o.texcoord = v.texcoord.xy;
 			o.normal = v.normal;
 			return o;
@@ -63,12 +65,27 @@
 			
 		half4 frag (v2f i) : COLOR
 		{
-			half2 uv = i.texcoord;
-			uv = abs(2.0*uv-1.0);
-			half line = max(uv.x,uv.y);
-//			return line;
-			line = smoothstep(0.985, 1, line);
-			return line;
+			half4 c = 0;
+			if(i.lPos.x >= 0.5){
+				c += half4(1,0,0,1);
+			}
+			if(i.lPos.x <= -0.5){
+				c += half4(0,1,1,1);
+			}
+			if(i.lPos.y >= 0.5){
+				c += half4(0,1,0,1);
+			}
+			if(i.lPos.y <= -0.5){
+				c += half4(1,0,1,1);
+			}
+			if(i.lPos.z >= 0.5){
+				c += half4(0,0,1,1);
+			}
+			if(i.lPos.z <= -0.5){
+				c += half4(1,1,0,1);
+			}
+			
+			return c;
 		}
 	ENDCG
 	
