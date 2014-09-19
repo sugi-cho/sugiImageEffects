@@ -1,0 +1,4 @@
+sugiImageEffects
+================
+
+Collection of imageEffects
