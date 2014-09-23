@@ -10,6 +10,7 @@ public class RenderEffect : MonoBehaviour
 	public Material[] targetMats;
 	public string propNameTarget = "_Tex";
 	public bool
+		globalProp = false,
 		show = true,
 		compute = false,
 		getBlur = false;
@@ -44,6 +45,8 @@ public class RenderEffect : MonoBehaviour
 			Material target = targetMats [i];
 			target.SetTexture (propNameTarget, output);
 		}
+		if (globalProp)
+			Shader.SetGlobalTexture (propNameTarget, output);
 		
 		if (show)
 			Graphics.Blit (output, d);
