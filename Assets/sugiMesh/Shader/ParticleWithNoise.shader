@@ -75,8 +75,8 @@
 			
 			half2 uv = i.texcoord;
 			uv = abs(2.0*uv-1.0);
-			half line = max(uv.x,uv.y);
-			line = smoothstep(0.85, 1, line);
+			half l = max(uv.x,uv.y);
+			l = smoothstep(0.85, 1, l);
 			
 			return c;
 		}
