@@ -55,19 +55,19 @@ float4 grad4(float j, float4 ip)
   p.w = 1.5 - dot(abs(p.xyz), ones.xyz);
   //s = p;//float4(lessThan(p, float4(0.0)));
   if(p.x<0)
-  	s.x = 1;
+  	s.x = 1.0;
   else
   	s.x = 0;
   if(p.y<0)
-  	s.y = 1;
+  	s.y = 1.0;
   else
   	s.y = 0;
   if(p.z<0)
-  	s.z = 1;
+  	s.z = 1.0;
   else
   	s.z = 0;
   if(p.w<0)
-  	s.w = 1;
+  	s.w = 1.0;
   else
   	s.w = 0;
   p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www; 

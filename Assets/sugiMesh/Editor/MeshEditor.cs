@@ -54,7 +54,14 @@ public class CubeParticle
 		
 		Selection.activeObject = mesh;
 	}
-	
+	[MenuItem("sugi.cho/Edit/CombineMesh")]
+	public static void CombineMesh ()
+	{
+		GameObject go = Selection.activeGameObject;
+		if (go == null)
+			return;
+		MeshCombiner.Combine (go);
+	}
 	
 	static void CreateParticleFromMesh (Mesh mesh)
 	{

@@ -32,18 +32,13 @@ public class FadeCutOff : MonoBehaviour
 		if (Input.GetKeyDown (KeyCode.F))
 			edit = !edit;
 	}
-
-	void OnRenderImage (RenderTexture s, RenderTexture d)
-	{
-		Graphics.Blit (s, d, mat);
-	}
 	
 	void OnGUI ()
 	{
 		if (!edit)
 			return;
 		
-		Rect r = camera.pixelRect;
+		Rect r = Rect.MinMaxRect (0, 0, Screen.width, Screen.height);
 		r.y = Screen.height - r.y - r.height;
 		r.width /= 2f;
 		r.height /= 2f;

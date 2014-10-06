@@ -3,7 +3,7 @@ using System.Collections;
 
 static class Extentions
 {
-
+	
 	public static Vector2 XY (this Vector3 vec3)
 	{
 		return new Vector2 (vec3.x, vec3.y);
@@ -16,10 +16,31 @@ static class Extentions
 	{
 		return new Vector2 (vec3.z, vec3.x);
 	}
-
-	public static Vector3 Position (this MonoBehaviour mb)
+	
+	public static Vector2 XY (this Vector4 vec4)
 	{
-		return mb.transform.position;
+		return new Vector2 (vec4.x, vec4.y);
+	}
+	public static Vector2 YZ (this Vector4 vec4)
+	{
+		return new Vector2 (vec4.y, vec4.z);
+	}
+	public static Vector2 ZW (this Vector4 vec4)
+	{
+		return new Vector2 (vec4.z, vec4.w);
+	}
+	public static Vector2 WX (this Vector4 vec4)
+	{
+		return new Vector2 (vec4.w, vec4.x);
+	}
+	
+	public static Vector3 Position (this MonoBehaviour mono)
+	{
+		return mono.transform.position;
+	}
+	public static Quaternion Rotation (this MonoBehaviour mono)
+	{
+		return mono.transform.rotation;
 	}
 	
 	static Material bMat {
@@ -34,14 +55,14 @@ static class Extentions
 	{
 		float 
 		widthMod = 1f / (1f * (1 << ds));
-
+		
 		int
 		rtW = s.width >> ds,
 		rtH = s.height >> ds;
-
+		
 		RenderTexture rt = RenderTexture.GetTemporary (rtW, rtH, s.depth, s.format);
 		Graphics.Blit (s, rt);
-
+		
 		for (int i = 0; i < iteration; i++) {
 			float iterationOffs = (float)i;
 			bMat.SetVector ("_Parameter", new Vector4 (bSize * widthMod + iterationOffs, -bSize * widthMod - iterationOffs, 0, 0));

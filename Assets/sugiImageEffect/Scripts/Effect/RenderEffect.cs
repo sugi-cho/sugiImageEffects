@@ -8,6 +8,7 @@ public class RenderEffect : MonoBehaviour
 	public TextureWrapMode wrapmode = TextureWrapMode.Clamp;
 	public Material[] inits, effects;
 	public Material[] targetMats;
+	public Renderer[] targetRenderers;
 	public string propNameTarget = "_Tex";
 	public bool
 		globalProp = false,
@@ -24,7 +25,7 @@ public class RenderEffect : MonoBehaviour
 	void Start ()
 	{
 		if (getBlur)
-			blurSize = (float)Screen.height / (float)baseHeight;
+			blurSize *= (float)Screen.height / (float)baseHeight;
 	}
 	
 	void OnRenderImage (RenderTexture s, RenderTexture d)
@@ -41,10 +42,10 @@ public class RenderEffect : MonoBehaviour
 		if (getBlur)
 			output.GetBlur (blurSize, blurIter, blurDS);
 		
-		for (int i = 0; i < targetMats.Length; i++) {
-			Material target = targetMats [i];
-			target.SetTexture (propNameTarget, output);
-		}
+		foreach (var mat in targetMats)
+			mat.SetTexture (propNameTarget, output);
+		foreach (var r in targetRenderers)
+			r.material.SetTexture (propNameTarget, output);
 		if (globalProp)
 			Shader.SetGlobalTexture (propNameTarget, output);
 		
