@@ -1,7 +1,8 @@
-﻿Shader "Custom/MaterialBase" {
+﻿Shader "Custom/PointParticle2" {
 	Properties {
 		_Color ("color", Color) = (0.5,0.5,0.5,0.5)
-		_MainTex ("texture", 2D) = "white" {}
+		_PosTex("tex4pos", 2D) = "black"{}
+		_VelTex("tex4vel", 2D) = "black"{}
 	}
  
 	CGINCLUDE
@@ -36,7 +37,7 @@
 			
 			o.vPos = v.vertex;
 			o.vNormal = v.normal;
-			o.wNormal = mul((float3x3)_Object2World, SCALED_NORMAL);
+			o.wNormal = mul((float3x3)_Object2World, v.normal);
 			return o;
 		}
 			
@@ -46,12 +47,13 @@
 				sUV = i.sPos.xy/i.sPos.w,
 				gUV = i.gPos.xy/i.gPos.w;
 			
-			return half4(i.wNormal,1);
+			return 1.0;
 		}
 	ENDCG
 	
 	SubShader {
 		Tags {"LightMode" = "Vertex"}
+		Cull Off
 		Pass {
 			CGPROGRAM
 			#pragma glsl

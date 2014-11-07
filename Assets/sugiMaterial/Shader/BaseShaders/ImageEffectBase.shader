@@ -7,13 +7,32 @@
  
 		sampler2D _MainTex;
 		half4 _MainTex_TexelSize;
+		
+		struct v2f 
+		{
+			float4 pos : SV_POSITION;
+			float2 uv : TEXCOORD0;
+			float2 uv1 : TEXCOORD1;
+		};
+		
+		v2f vert (appdata_img v) 
+		{
+			v2f o;
+			o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+			o.uv.xy = v.texcoord;
+			o.uv1.xy = v.texcoord;
+
+			#if UNITY_UV_STARTS_AT_TOP 
+			if (_MainTex_TexelSize.y < 0)
+				o.uv1.y = 1-o.uv1.y;		
+			#else
 			
-		half4 frag(v2f_img i) : COLOR{
-#if UNITY_UV_STARTS_AT_TOP
-			if (_MainTex_TexelSize.y < 0) 
-				i.uv.y = 1-i.uv.y;
-#endif
+			#endif
+			  
+			return o;
+		} 
 			
+		half4 frag(v2f i) : COLOR{
 			return tex2D(_MainTex, i.uv);
 		}
 	ENDCG

@@ -23,6 +23,7 @@
 		}
 		half4 frag (v2f i) : COLOR
 		{
+			//午後ティーを午前中に飲む
 			half3 lightColor = ShadeVertexLights(i.vPos, i.normal);
 			return half4(lightColor,1);
 		}

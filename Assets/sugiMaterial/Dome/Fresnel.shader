@@ -1,13 +1,15 @@
-﻿Shader "Custom/MaterialBase" {
+﻿Shader "Custom/Fresnel" {
 	Properties {
 		_Color ("color", Color) = (0.5,0.5,0.5,0.5)
 		_MainTex ("texture", 2D) = "white" {}
+		_P ("power", Float) = 1.5
 	}
  
 	CGINCLUDE
 		#include "UnityCG.cginc"
-		sampler2D _MainTex;
+		sampler2D _MainTex,_GrabTexture;
 		fixed4 _Color;
+		half _P;
 		
 		struct v2f {
 			float4 pos : SV_POSITION;
@@ -21,6 +23,7 @@
 			float4 vPos : TEXCOORD4;
 			float3 vNormal : TEXCOORD5;
 			float3 wNormal : TEXCOORD6;
+			float3 viewNormal : TEXCOORD7;
 		};
  
 		v2f vert (appdata_full v)
@@ -37,6 +40,7 @@
 			o.vPos = v.vertex;
 			o.vNormal = v.normal;
 			o.wNormal = mul((float3x3)_Object2World, SCALED_NORMAL);
+			o.viewNormal = mul(UNITY_MATRIX_MVP, half4(v.normal,0));
 			return o;
 		}
 			
@@ -45,13 +49,20 @@
 			half2
 				sUV = i.sPos.xy/i.sPos.w,
 				gUV = i.gPos.xy/i.gPos.w;
+			half3 viewDir = normalize(_WorldSpaceCameraPos - i.wPos.xyz);
+			half fresnel = saturate(1- dot(viewDir,i.wNormal));
+			fresnel = pow(fresnel,_P);
+			half4 c = tex2D(_GrabTexture, gUV + i.viewNormal*fresnel*0.1);
+			return c+fresnel*_Color;
 			
-			return half4(i.wNormal,1);
+			return half4(i.viewNormal*fresnel,1);
+			return half4(viewDir,1);
 		}
 	ENDCG
 	
 	SubShader {
-		Tags {"LightMode" = "Vertex"}
+		GrabPass{}
+		Tags {"LightMode" = "Vertex" "Queue" = "Transparent"}
 		Pass {
 			CGPROGRAM
 			#pragma glsl
