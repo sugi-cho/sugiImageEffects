@@ -83,4 +83,19 @@ static class Extentions
 		RenderTexture.ReleaseTemporary (rt);
 		return s;
 	}
+	public static RenderTexture CreateRenderTexture(int width, int height){
+		RenderTexture rt = new RenderTexture (width, height, 0, RenderTextureFormat.ARGBHalf);
+		rt.wrapMode = TextureWrapMode.Repeat;
+		rt.filterMode = FilterMode.Bilinear;
+		rt.Create ();
+		RenderTexture.active = rt;
+		GL.Clear (true, true, Color.clear);
+		return rt;
+	}
+	public static void ReleaseRenderTexture(RenderTexture rt){
+		if (rt == null)
+			return;
+		rt.Release ();
+		Object.Destroy (rt);
+	}
 }
