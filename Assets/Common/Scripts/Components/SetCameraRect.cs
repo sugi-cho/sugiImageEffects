@@ -25,24 +25,24 @@ public class SetCameraRect : MonoBehaviour
 		fov = f;
 		
 		if (cameraNum < numCams) {
-			camera.enabled = true;
+			GetComponent<Camera>().enabled = true;
 			SetCameraProp (numCams);
 		} else {
-			camera.rect = Rect.MinMaxRect (0.5f, 0.5f, 0.5f, 0.5f);
-			camera.enabled = false;
+			GetComponent<Camera>().rect = Rect.MinMaxRect (0.5f, 0.5f, 0.5f, 0.5f);
+			GetComponent<Camera>().enabled = false;
 		}
 	}
 	// Use this for initialization
 	void SetCameraProp (int numCams)
 	{
-		Rect rect = camera.rect;
+		Rect rect = GetComponent<Camera>().rect;
 		rect.width = 1f / (float)numCams;
 		rect.height = camHight;
 		rect.x = (float)cameraNum / (float)numCams;
 
 		rect.y = offsetY;
-		camera.rect = rect;
-		camera.fieldOfView = fov;
+		GetComponent<Camera>().rect = rect;
+		GetComponent<Camera>().fieldOfView = fov;
 		
 		transform.rotation = Quaternion.Euler (0, angle * (float)cameraNum, 0);
 	}

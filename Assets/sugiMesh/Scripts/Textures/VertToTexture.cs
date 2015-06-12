@@ -102,7 +102,7 @@ public class VertToTexture : MonoBehaviour
 	
 	void Awake ()
 	{
-		mat = renderer.material;
+		mat = GetComponent<Renderer>().material;
 		if (decodeMat == null) {
 			if (targetMesh == null) {
 				Destroy (this);

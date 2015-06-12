@@ -14,7 +14,7 @@ public class SetMaterialProp : MonoBehaviour {
 	Material m;
 	// Use this for initialization
 	void Start () {
-		m = renderer.material;
+		m = GetComponent<Renderer>().material;
 		switch(type){
 		case propType.Color:
 			m.SetColor(propName, c);

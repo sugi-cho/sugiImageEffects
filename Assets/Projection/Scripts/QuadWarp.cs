@@ -5,13 +5,13 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Camera))]
 public class QuadWarp : MonoBehaviour
 {
-	public GameObject planePrefab;
 	public Material
 		quadWarpMat;
 	public List<QuadWarpSetting>
-		settingList = new List<QuadWarpSetting> ();
-		
-	int
+        settingList = new List<QuadWarpSetting>();
+    public Mesh planeMesh;
+
+    int
 		numX = 1,
 		numY = 1;
 	List<Material> matList = new List<Material> ();
@@ -74,19 +74,25 @@ public class QuadWarp : MonoBehaviour
 	}
 	
 	GameObject CreatePlane (int x, int y)
-	{
-		GameObject plane = (GameObject)Instantiate (planePrefab);
-		plane.layer = gameObject.layer;
-		
+    {
+        var plane = new GameObject("plane");
+        var filter = plane.AddComponent<MeshFilter>();
+        var renderer = plane.AddComponent<MeshRenderer>();
+        //         GameObject plane = (GameObject)Instantiate (planePrefab);
+        plane.layer = gameObject.layer;
 		plane.transform.parent = transform;
-		plane.transform.localPosition = transform.forward;
-		
-		Vector2 scale = Vector2.one * camera.orthographicSize;
-		scale.x *= camera.pixelRect.width / camera.pixelRect.height;
-		
-		Material mat = plane.renderer.material;
-		mat.mainTexture = quadWarpMat.mainTexture;
-		mat.SetVector ("_Prop1", scale);
+        plane.transform.localPosition = transform.forward;
+
+        filter.sharedMesh = planeMesh;
+
+        Vector2 scale = Vector2.one * GetComponent<Camera>().orthographicSize;
+		scale.x *= GetComponent<Camera>().pixelRect.width / GetComponent<Camera>().pixelRect.height;
+
+//         var r = plane.GetComponent<Renderer>();
+        Material mat = renderer.material;
+        mat.shader = quadWarpMat.shader;
+        // 		mat.mainTexture = quadWarpMat.mainTexture;
+        mat.SetVector ("_Prop1", scale);
 		mat.SetVector ("_Prop2", new Vector4 (x, y, 1f / (float)numX, 1f / (float)numY));
 		
 		matList.Add (mat);

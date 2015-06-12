@@ -3,89 +3,72 @@ using System.Collections;
 
 public class RenderEffect : MonoBehaviour
 {
-	public string label = "discription";
-	public RenderTexture output;
-	public TextureWrapMode wrapmode = TextureWrapMode.Clamp;
-	public Material[] inits, effects;
-	public Material[] targetMats;
-	public Renderer[] targetRenderers;
-	public string propNameTarget = "_Tex";
-	public bool
-		globalProp = false,
+	public string propName = "_PropName";
+	public Material[] effects;
+	public bool 
 		show = true,
-		compute = false,
-		getBlur = false;
-
-	public float blurSize = 3f;
+		blur = false;
+	public float
+		bSize = 1f;
 	public int
-		blurIter = 3,
-		blurDS = 1,
-		baseHeight = 720;
+		bItr = 3,
+		bDS = 1,
+		bHeight = 1080;
 	
+	[SerializeField]
+	RenderTexture[]
+		rts = new RenderTexture[2];
 	void Start ()
 	{
-		if (getBlur)
-			blurSize *= (float)Screen.height / (float)baseHeight;
+		if (blur)
+			bSize *= (float)Screen.height / (float)bHeight;
 	}
 	
 	void OnRenderImage (RenderTexture s, RenderTexture d)
 	{
-		if (compute) {
-			if (output == null) {
-				CreateOutput (s);
-				RenderOutput (output, inits);
-			}
-			RenderOutput (output);
-		} else
-			RenderOutput (s);
+		CheckRTs (s);
+		Graphics.Blit (s, rts [0]);
+		foreach (var m in effects) {
+			Graphics.Blit (rts [0], rts [1], m);
+			SwapRTs ();
+		}
 		
-		if (getBlur)
-			output.GetBlur (blurSize, blurIter, blurDS);
-		
-		foreach (var mat in targetMats)
-			mat.SetTexture (propNameTarget, output);
-		foreach (var r in targetRenderers)
-			r.material.SetTexture (propNameTarget, output);
-		if (globalProp)
-			Shader.SetGlobalTexture (propNameTarget, output);
-		
+		var output = rts [0];
+		if (blur)
+			output.GetBlur (bSize, bItr, bDS);
+		Shader.SetGlobalTexture (propName, output);
 		if (show)
 			Graphics.Blit (output, d);
 		else
 			Graphics.Blit (s, d);
 	}
-	void RenderOutput (RenderTexture s)
+	
+	void CheckRTs (RenderTexture s)
 	{
-		RenderOutput (s, effects);
-	}
-	void RenderOutput (RenderTexture s, Material[] effects)
-	{
-		if (output == null || output.width != s.width || output.height != s.height)
-			CreateOutput (s);
-		
-		if (effects.Length > 0) {
-			RenderTexture rt = RenderTexture.GetTemporary (s.width, s.height, s.depth, s.format);
-			Graphics.Blit (s, rt);
-			for (int i = 0; i < effects.Length; i++) {
-				Material effect = effects [i];
-				for (int j = 0; j < effect.passCount; j++) {
-					Graphics.Blit (rt, output, effect, j);
-					Graphics.Blit (output, rt);
-				}
+		if (rts [0] == null || rts [0].width != s.width || rts [0].height != s.height) {
+			for (var i = 0; i<rts.Length; i++) {
+				var rt = rts [i];
+				rts [i] = Extensions.CreateRenderTexture (s, rt);
 			}
-			RenderTexture.ReleaseTemporary (rt);
-		} else
-			Graphics.Blit (s, output);
+		}
 	}
 	
-	void CreateOutput (RenderTexture s)
+	void SwapRTs ()
 	{
-		if (output != null) {
-			Destroy (output);
-		}
-		output = new RenderTexture (s.width, s.height, s.depth, s.format);
-		output.wrapMode = wrapmode;
-		output.Create ();
-		Graphics.Blit (s, output);
+		var tmp = rts [0];
+		rts [0] = rts [1];
+		rts [1] = tmp;
+	}
+	
+	void OnDisabled ()
+	{
+		foreach (var rt in rts)
+			Extensions.ReleaseRenderTexture (rt);
+	}
+	
+	void OnGUI ()
+	{
+		
 	}
 }
+

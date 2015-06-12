@@ -19,7 +19,7 @@ public class CreateAnimationTexture
 		GameObject selection = go;
 		if (selection == null)
 			return;
-		Animation animation = selection.animation;
+		Animation animation = selection.GetComponent<Animation>();
 		if (animation == null)
 			return;
 		AnimationState state = animation [animation.clip.name];

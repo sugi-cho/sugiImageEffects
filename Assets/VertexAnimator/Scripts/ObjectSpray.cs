@@ -14,7 +14,7 @@ public class ObjectSpray : MonoBehaviour {
 			mousePos.x += sprayPos.x;
 			mousePos.y += sprayPos.y;
 			mousePos.z = length;
-			Transform trans = ((Transform)Instantiate(t, camera.ScreenToWorldPoint(mousePos),t.rotation));
+			Transform trans = ((Transform)Instantiate(t, GetComponent<Camera>().ScreenToWorldPoint(mousePos),t.rotation));
 			trans.gameObject.AddComponent<Time2Destroy>().time = 30f;
 			trans.LookAt(transform.position, Random.onUnitSphere);
 		}

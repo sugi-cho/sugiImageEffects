@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-static class Extentions
+static class Extensions
 {
 	
 	public static Vector2 XY (this Vector3 vec3)
@@ -83,8 +83,11 @@ static class Extentions
 		RenderTexture.ReleaseTemporary (rt);
 		return s;
 	}
-	public static RenderTexture CreateRenderTexture(int width, int height){
-		RenderTexture rt = new RenderTexture (width, height, 0, RenderTextureFormat.ARGBHalf);
+	public static RenderTexture CreateRenderTexture (int width, int height, RenderTexture rt = null)
+	{
+		if (rt != null)
+			ReleaseRenderTexture (rt);
+		rt = new RenderTexture (width, height, 16, RenderTextureFormat.ARGBHalf);
 		rt.wrapMode = TextureWrapMode.Repeat;
 		rt.filterMode = FilterMode.Bilinear;
 		rt.Create ();
@@ -92,10 +95,33 @@ static class Extentions
 		GL.Clear (true, true, Color.clear);
 		return rt;
 	}
-	public static void ReleaseRenderTexture(RenderTexture rt){
+	public static RenderTexture CreateRenderTexture (RenderTexture s, RenderTexture rt = null)
+	{
+		if (rt != null)
+			Extensions.ReleaseRenderTexture (rt);
+		rt = CreateRenderTexture (s.width, s.height);
+		return rt;
+	}
+	public static void ReleaseRenderTexture (RenderTexture rt)
+	{
 		if (rt == null)
 			return;
 		rt.Release ();
 		Object.Destroy (rt);
+	}
+	static public void DrawFullscreenQuad (this Material mat, int pass = 0, float z=1.0f)
+	{
+		mat.SetPass (pass);
+		GL.Begin (GL.QUADS);
+		GL.Vertex3 (-1.0f, -1.0f, z);
+		GL.Vertex3 (1.0f, -1.0f, z);
+		GL.Vertex3 (1.0f, 1.0f, z);
+		GL.Vertex3 (-1.0f, 1.0f, z);
+		
+		GL.Vertex3 (-1.0f, 1.0f, z);
+		GL.Vertex3 (1.0f, 1.0f, z);
+		GL.Vertex3 (1.0f, -1.0f, z);
+		GL.Vertex3 (-1.0f, -1.0f, z);
+		GL.End ();
 	}
 }

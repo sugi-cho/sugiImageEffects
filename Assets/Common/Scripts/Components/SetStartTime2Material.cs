@@ -6,7 +6,7 @@ public class SetStartTime2Material : MonoBehaviour {
 	Material m;
 	// Use this for initialization
 	void Start () {
-		m = renderer.material;
+		m = GetComponent<Renderer>().material;
 		m.SetFloat(propName, Time.timeSinceLevelLoad);
 	}
 	

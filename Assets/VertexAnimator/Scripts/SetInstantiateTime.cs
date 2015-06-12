@@ -7,7 +7,7 @@ public class SetInstantiateTime : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		m = renderer.material;
+		m = GetComponent<Renderer>().material;
 		m.SetFloat ("_T", Time.time);
 	}
 	void OnDestroy ()

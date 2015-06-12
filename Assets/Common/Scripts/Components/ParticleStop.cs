@@ -7,12 +7,12 @@ public class ParticleStop : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		particleSystem.enableEmission = false;
+		GetComponent<ParticleSystem>().enableEmission = false;
 	}
 
 	void Update ()
 	{
-		if (autoDestuct && particleSystem.particleCount == 0)
+		if (autoDestuct && GetComponent<ParticleSystem>().particleCount == 0)
 			Destroy (gameObject);
 	}
 }

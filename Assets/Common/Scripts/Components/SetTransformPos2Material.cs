@@ -7,7 +7,7 @@ public class SetTransformPos2Material : MonoBehaviour {
 	Material m;
 	// Use this for initialization
 	void Start () {
-		m = renderer.material;
+		m = GetComponent<Renderer>().material;
 		Vector3 vec = transform.InverseTransformPoint(vector.x, vector.y, vector.z);
 		vector.x = vec.x; vector.y = vec.y; vector.z = vec.z;
 		m.SetVector(propName, vector);

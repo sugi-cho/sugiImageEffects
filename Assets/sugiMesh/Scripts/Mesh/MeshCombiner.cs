@@ -24,7 +24,7 @@ public class MeshCombiner : MonoBehaviour
 	void CombineMesh ()
 	{
 		if (m == null) {
-			m = GetComponentInChildren<MeshFilter> ().renderer.sharedMaterial;
+			m = GetComponentInChildren<MeshFilter> ().GetComponent<Renderer>().sharedMaterial;
 		}
 		CombineInstance[] cis = GetComponentsInChildren<MeshFilter> ().Select (b => {
 			CombineInstance instance = new CombineInstance ();
@@ -59,7 +59,7 @@ public class MeshCombiner : MonoBehaviour
 	void AddChildMesh (CombineInstance[] cis)
 	{
 		Mesh mesh = new Mesh ();
-		mesh.CombineMeshes (cis);
+		mesh.CombineMeshes (cis, true, true);
 		GameObject go = new GameObject ("mesh");
 		go.transform.parent = transform;
 		go.AddComponent<MeshFilter> ().mesh = mesh;
